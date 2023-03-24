@@ -16,7 +16,9 @@ ext {
     coroutinesTest = '1.6.4'
     androidJunit = '1.1.5'
     espresso = '3.4.0'
-    mockWebServer = '4.9.0'
+    mockWebServer = '4.10.0'
+    coreKtx = '1.5.0'
+    testRunner = '1.5.2'
 
     generalDependencies = [
             core              : "androidx.core:core-ktx:$core",
@@ -46,6 +48,8 @@ ext {
             coroutinesTest: "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesTest",
             androidJunit  : "androidx.test.ext:junit:$androidJunit",
             espresso      : "androidx.test.espresso:espresso-core:$espresso",
-            mockWebServer : "com.squareup.okhttp3:mockwebserver:$mockWebServer"
+            mockWebServer : "com.squareup.okhttp3:mockwebserver:$mockWebServer",
+            coreKtx       : "androidx.test:core-ktx:$coreKtx",
+            testRunner    : "androidx.test:runner:$testRunner"
     ]
 }
