@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name" translatable="false">Github API</string>
+
+    <!-- BottomNavigation -->
+    <string name="projects">Repository</string>
+    <string name="gist">Gists</string>
+
+    <!-- ProjectFragment -->
+    <string name="empty_list_repository">Empty Repository List</string>
+    <string name="api_error">API Error</string>
+    <string name="network_error">Network error</string>
+    <string name="limit_exceeded">Call limit exceeded, try again later!</string>
+    <string name="no_more_pages">There are no more repositories to search.</string>
+    <string name="repository_without_license">Repository without License</string>
+</resources>

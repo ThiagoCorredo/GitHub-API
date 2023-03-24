@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="projects">Repositórios</string>
+    <string name="gist">Gists</string>
+
+    <!-- ProjectFragment -->
+    <string name="empty_list_repository">Lista de Repositórios vazia</string>
+    <string name="api_error">API está com algum problema</string>
+    <string name="network_error">Erro com a internet</string>
+    <string name="limit_exceeded">Limite de chamadas excedidas, tente novamente mais tarde!</string>
+    <string name="no_more_pages">Não há mais repositórios a serem buscados.</string>
+    <string name="repository_without_license">Repositório sem licença</string>
+</resources>
