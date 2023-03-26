@@ -2,7 +2,7 @@ package com.tcorredo.githubapi.data.mapper
 
 import com.tcorredo.githubapi.data.domain.Mapper
 import com.tcorredo.githubapi.data.domain.entity.Project
-import com.tcorredo.githubapi.data.remote.ProjectResponse
+import com.tcorredo.githubapi.data.remote.project.ProjectResponse
 
 class ProjectResponseToProjectDomainMapper : Mapper<ProjectResponse, Project> {
     override fun invoke(projectResponse: ProjectResponse): Project {

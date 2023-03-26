@@ -1,48 +1,47 @@
 package com.tcorredo.githubapi.data
 
-import com.tcorredo.githubapi.data.remote.GitHubService
-import com.tcorredo.githubapi.data.remote.project.ProjectResponse
 import com.tcorredo.githubapi.data.domain.Mapper
 import com.tcorredo.githubapi.data.domain.dispatchers.CoroutineDispatchers
-import com.tcorredo.githubapi.data.domain.entity.Project
-import com.tcorredo.githubapi.data.domain.repository.ProjectRepository
-import com.tcorredo.githubapi.data.remote.project.ItemsResponse
+import com.tcorredo.githubapi.data.domain.entity.Gist
+import com.tcorredo.githubapi.data.domain.repository.GistRepository
+import com.tcorredo.githubapi.data.remote.GitHubService
+import com.tcorredo.githubapi.data.remote.gist.GistResponse
 import com.tcorredo.githubapi.util.PagingManager
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import retrofit2.Response
 
-class ProjectRepositoryImpl(
+class GistRepositoryImpl(
     private val gitHubApiService: GitHubService,
     private val dispatchers: CoroutineDispatchers,
-    private val responseToDomain: Mapper<ProjectResponse, Project>,
+    private val responseToDomain: Mapper<GistResponse, Gist>,
     private val pagingManager: PagingManager
-) : ProjectRepository {
+) : GistRepository {
 
-    private var projects: List<Project> = emptyList()
+    private var gists: List<Gist> = emptyList()
 
-    private suspend fun getProjectsFromRemote(page: Int): Response<ItemsResponse> {
+    private suspend fun getGistsFromRemote(page: Int): Response<List<GistResponse>> {
         return withContext(dispatchers.io) {
-            gitHubApiService.getRepositories(page)
+            gitHubApiService.getGists(page)
         }
     }
 
-    override suspend fun getProjects(): ResultState<List<Project>> {
+    override suspend fun getGists(): ResultState<List<Gist>> {
         return withContext(dispatchers.io) {
             if (pagingManager.nextPage != 1 && !pagingManager.hasMore()) {
                 ResultState.NoMorePage
             }
 
             try {
-                val response = getProjectsFromRemote(pagingManager.nextPage)
+                val response = getGistsFromRemote(pagingManager.nextPage)
                 if (response.isSuccessful) {
                     pagingManager.savePageHeader(response.headers())
 
-                    val data = response.body()?.response?.map(responseToDomain)
+                    val data = response.body()?.map(responseToDomain)
                     data.let {
                         if (!it.isNullOrEmpty()) {
-                            projects = projects + it
-                            ResultState.Success(projects)
+                            gists = gists + it
+                            ResultState.Success(gists)
                         } else {
                             ResultState.EmptyData
                         }

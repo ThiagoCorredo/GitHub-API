@@ -3,7 +3,7 @@ package com.tcorredo.githubapi
 import com.tcorredo.githubapi.data.ResultState
 import com.tcorredo.githubapi.data.domain.entity.Project
 import com.tcorredo.githubapi.data.domain.usecase.GetProjectsUseCase
-import com.tcorredo.githubapi.data.remote.ItemsResponse
+import com.tcorredo.githubapi.data.remote.project.ItemsResponse
 import com.tcorredo.githubapi.ui.project.ProjectViewModel
 import com.tcorredo.githubapi.ui.project.ProjectViewState
 import io.mockk.coEvery
@@ -14,7 +14,6 @@ import org.junit.Rule
 import org.junit.Test
 import retrofit2.HttpException
 import retrofit2.Response
-import java.io.IOException
 
 class ProjectViewModelTest {
 

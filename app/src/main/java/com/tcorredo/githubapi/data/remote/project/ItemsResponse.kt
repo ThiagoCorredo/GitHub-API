@@ -1,4 +1,4 @@
-package com.tcorredo.githubapi.data.remote
+package com.tcorredo.githubapi.data.remote.project
 
 import com.squareup.moshi.Json
 

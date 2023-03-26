@@ -1,8 +1,10 @@
 package com.tcorredo.githubapi.di
 
 import com.squareup.moshi.Moshi
+import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.tcorredo.githubapi.BuildConfig
+import com.tcorredo.githubapi.data.mapper.GistResponseToGistDomainMapper
 import com.tcorredo.githubapi.data.mapper.ProjectResponseToProjectDomainMapper
 import com.tcorredo.githubapi.data.remote.GitHubService
 import okhttp3.*
@@ -13,6 +15,7 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 private const val BASE_URL = "BASE_URL"
@@ -22,6 +25,8 @@ val dataModule = module {
     single { GitHubService(get()) }
 
     single { ProjectResponseToProjectDomainMapper() }
+
+    single { GistResponseToGistDomainMapper() }
 
     single { provideRetrofit(get(named(BASE_URL)), get(), get()) }
 
@@ -36,6 +41,7 @@ private fun provideMoshi(): Moshi {
     return Moshi
         .Builder()
         .add(KotlinJsonAdapterFactory())
+        .add(Date::class.java, Rfc3339DateJsonAdapter().nullSafe())
         .build()
 }
 

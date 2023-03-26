@@ -1,34 +1,33 @@
-package com.tcorredo.githubapi.ui.project
+package com.tcorredo.githubapi.ui.gist
 
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.core.view.isVisible
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.tcorredo.githubapi.R
-import com.tcorredo.githubapi.databinding.FragmentProjectBinding
+import com.tcorredo.githubapi.databinding.FragmentGistBinding
 import com.tcorredo.githubapi.ui.BaseFragment
 import com.tcorredo.githubapi.util.Constants
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class ProjectFragment : BaseFragment<FragmentProjectBinding>(FragmentProjectBinding::inflate) {
+class GistFragment : BaseFragment<FragmentGistBinding>(FragmentGistBinding::inflate) {
 
-    private val projectViewModel by viewModel<ProjectViewModel>()
-    private var adapter = ProjectAdapter()
+    private val gistViewModel by viewModel<GistViewModel>()
+    private var adapter = GistAdapter()
     private var isFirstTime = true
     private var isWaiting = false
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val linearLayoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.adapter = adapter
-        binding.recyclerView.layoutManager = linearLayoutManager
+        binding.recyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
 
-        projectViewModel.viewState.observe(viewLifecycleOwner) {
+        gistViewModel.viewState.observe(viewLifecycleOwner) {
             when (it) {
-                is ProjectViewState.Content -> {
+                is GistViewState.Content -> {
                     binding.messageLayout.loadingProgress.visibility = View.GONE
                     if (binding.messageLayout.infoLayout.isVisible) {
                         binding.messageLayout.infoLayout.visibility = View.GONE
@@ -37,13 +36,13 @@ class ProjectFragment : BaseFragment<FragmentProjectBinding>(FragmentProjectBind
                     adapter.submitList(it.projects)
                     isWaiting = false
                 }
-                is ProjectViewState.EmptyState -> {
+                is GistViewState.EmptyState -> {
                     binding.messageLayout.loadingProgress.visibility = View.GONE
                     binding.messageLayout.infoLayout.visibility = View.VISIBLE
                     binding.messageLayout.infoIcon.setImageResource(R.drawable.ic_format_list_numbered_gray_72dp)
                     binding.messageLayout.infoText.setText(R.string.empty_list_repository)
                 }
-                is ProjectViewState.ShowError -> {
+                is GistViewState.ShowError -> {
                     binding.messageLayout.loadingProgress.visibility = View.GONE
                     when (it.code) {
                         Constants.DEFAULT_VALUE -> {
@@ -64,13 +63,13 @@ class ProjectFragment : BaseFragment<FragmentProjectBinding>(FragmentProjectBind
                         }
                     }
                 }
-                is ProjectViewState.NoMorePage ->
+                is GistViewState.NoMorePage ->
                     Toast.makeText(
                         context,
                         R.string.no_more_pages,
                         Toast.LENGTH_LONG
                     ).show()
-                is ProjectViewState.Loading ->
+                is GistViewState.Loading ->
                     if (isFirstTime) {
                         isFirstTime = false
                         binding.messageLayout.loadingProgress.visibility = View.VISIBLE
@@ -83,12 +82,12 @@ class ProjectFragment : BaseFragment<FragmentProjectBinding>(FragmentProjectBind
                 super.onScrollStateChanged(recyclerView, newState)
                 if (!recyclerView.canScrollVertically(1) && !isWaiting) {
                     isWaiting = true
-                    getProjects()
+                    getGists()
                 }
             }
         })
-        getProjects()
+        getGists()
     }
 
-    private fun getProjects() = projectViewModel.getProjects()
+    private fun getGists() = gistViewModel.getGists()
 }
