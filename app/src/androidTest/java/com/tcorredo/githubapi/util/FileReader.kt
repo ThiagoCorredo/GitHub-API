@@ -2,25 +2,20 @@ package com.tcorredo.githubapi.util
 
 import android.content.Context
 import java.io.IOException
-import java.io.InputStream
 import java.io.InputStreamReader
 
 object FileReader {
     fun asset(context: Context, assetPath: String): String {
         try {
-            val inputStream = context.assets.open("network_files/$assetPath")
-            return inputStreamToString(inputStream, "UTF-8")
+            val inputStream = context.assets.open(assetPath)
+            val builder = StringBuilder()
+            val reader = InputStreamReader(inputStream, "UTF-8")
+            reader.readLines().forEach {
+                builder.append(it)
+            }
+            return builder.toString()
         } catch (e: IOException) {
-            throw RuntimeException(e)
+            throw e
         }
-    }
-
-    private fun inputStreamToString(inputStream: InputStream, charsetName: String): String {
-        val builder = StringBuilder()
-        val reader = InputStreamReader(inputStream, charsetName)
-        reader.readLines().forEach {
-            builder.append(it)
-        }
-        return builder.toString()
     }
 }

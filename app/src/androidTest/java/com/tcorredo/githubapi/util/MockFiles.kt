@@ -1,10 +1,6 @@
 package com.tcorredo.githubapi.util
 
-
-object APIPaths {
-    const val PROJECT_LIST = "search/repositories?q=language:kotlin&sort=stars"
-}
-
 object MockFiles {
-    const val RESPONSE_SUCCESS = "response_200.json"
+    const val REPOSITORY_RESPONSE_SUCCESS = "repository_success_response.json"
+    const val REPOSITORY_RESPONSE_ERROR = "repository_error_response.json.json"
 }

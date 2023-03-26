@@ -15,13 +15,16 @@ class ProjectRobot {
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
     }
 
+    fun assertErrorDisplayed() = apply {
+        Espresso.onView(errorViewMatcher).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+    }
+
     fun waitForCondition(idlingResource: IdlingResource?) = apply {
         IdlingRegistry.getInstance().register(idlingResource)
     }
 
     companion object {
-        private const val recyclerViewId = R.id.recyclerView
-
         private val recyclerViewMatcher = withId(R.id.recyclerView)
+        private val errorViewMatcher = withId(R.id.infoLayout)
     }
 }

@@ -1,45 +1,26 @@
 package com.tcorredo.githubapi.project
 
+import android.content.Intent
 import android.view.View
 import androidx.core.widget.ContentLoadingProgressBar
+import androidx.test.core.app.ActivityScenario
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.tcorredo.githubapi.BaseEspressoTest
 import com.tcorredo.githubapi.R
 import com.tcorredo.githubapi.ui.MainActivity
-import com.tcorredo.githubapi.util.SuccessDispatcher
 import com.tcorredo.githubapi.util.ViewVisibilityIdlingResource
-import okhttp3.mockwebserver.MockWebServer
-import org.junit.After
 import org.junit.Assert.*
-import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class ProjectFragmentTest {
+class ProjectFragmentTest : BaseEspressoTest() {
 
-    @get:Rule
-    val activityRule = ActivityScenarioRule(MainActivity::class.java)
-
-    private val mockWebServer = MockWebServer()
-    private var progressBarGoneIdlingResource: ViewVisibilityIdlingResource? = null
-
-    @Before
-    fun setUp() {
-        mockWebServer.start(8080)
-    }
-
-    @After
-    fun teardown() {
-        mockWebServer.shutdown()
-        IdlingRegistry.getInstance().unregister(progressBarGoneIdlingResource)
-    }
 
     @Test
     fun onAppLaunch_shouldShowLoadingList() {
@@ -48,9 +29,13 @@ class ProjectFragmentTest {
 
     @Test
     fun onAppLaunch_whenLoadStopAndResponseSuccess_shouldShowProjectList() {
-        mockWebServer.dispatcher = SuccessDispatcher()
+        mockWebServer.dispatcher = RepositorySuccessDispatcher()
+
+        val intent = Intent(ApplicationProvider.getApplicationContext(), MainActivity::class.java)
+        val scenario = ActivityScenario.launch<MainActivity>(intent)
+
         var loadingProgress: ContentLoadingProgressBar? = null
-        activityRule.scenario.onActivity {
+        scenario.onActivity {
             loadingProgress = it.findViewById(R.id.loadingProgress)
         }
 
@@ -59,8 +44,33 @@ class ProjectFragmentTest {
                 loadingProgress,
                 View.GONE
             )
+
+
         ProjectRobot()
             .waitForCondition(progressBarGoneIdlingResource)
             .assertDataDisplayed()
+    }
+
+    @Test
+    fun onAppLaunch_whenLoadStopAndResponseFailure_shouldErrorLayout() {
+        mockWebServer.dispatcher = ErrorDispatcher()
+
+        val intent = Intent(ApplicationProvider.getApplicationContext(), MainActivity::class.java)
+        val scenario = ActivityScenario.launch<MainActivity>(intent)
+
+        var loadingProgress: ContentLoadingProgressBar? = null
+        scenario.onActivity {
+            loadingProgress = it.findViewById(R.id.loadingProgress)
+        }
+
+        progressBarGoneIdlingResource =
+            ViewVisibilityIdlingResource(
+                loadingProgress,
+                View.GONE
+            )
+
+        ProjectRobot()
+            .waitForCondition(progressBarGoneIdlingResource)
+            .assertErrorDisplayed()
     }
 }
