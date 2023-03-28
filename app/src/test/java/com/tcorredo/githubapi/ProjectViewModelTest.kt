@@ -2,30 +2,46 @@ package com.tcorredo.githubapi
 
 import com.tcorredo.githubapi.data.ResultState
 import com.tcorredo.githubapi.data.domain.entity.Project
+import com.tcorredo.githubapi.data.domain.repository.ProjectRepository
 import com.tcorredo.githubapi.data.domain.usecase.GetProjectsUseCase
-import com.tcorredo.githubapi.data.remote.project.ItemsResponse
 import com.tcorredo.githubapi.ui.project.ProjectViewModel
 import com.tcorredo.githubapi.ui.project.ProjectViewState
 import io.mockk.coEvery
 import io.mockk.mockk
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import retrofit2.HttpException
-import retrofit2.Response
+import org.koin.core.context.startKoin
+import org.koin.core.context.stopKoin
+import org.koin.dsl.module
+import org.koin.test.KoinTest
 
-class ProjectViewModelTest {
+class ProjectViewModelTest : KoinTest {
 
     @get:Rule
     val instantExecutionRule = InstantExecutionRule()
 
     lateinit var viewModel: ProjectViewModel
     private val getProjectsUseCase: GetProjectsUseCase = mockk()
+    private val projectRepository: ProjectRepository = mockk()
 
     @Before
-    fun setup() {
+    fun setUp() {
+        startKoin {
+            modules(module {
+                single { viewModel }
+                single { projectRepository }
+                single { getProjectsUseCase }
+            })
+        }
         viewModel = ProjectViewModel(getProjectsUseCase)
+    }
+
+    @After
+    fun tearDown() {
+        stopKoin()
     }
 
     @Test
@@ -50,12 +66,17 @@ class ProjectViewModelTest {
 
     @Test
     fun givenEmptyList_whenGettingApiResult_shouldReturnNetworkErrorState() {
-        val response: Response<ItemsResponse> = mockk()
-
-        coEvery { getProjectsUseCase.invoke() } throws HttpException(response)
+        val errorMessage = "Mock error"
+        coEvery { getProjectsUseCase.invoke() } returns ResultState.ErrorFatal(
+            Exception(
+                errorMessage
+            )
+        )
 
         viewModel.getProjects()
 
-        assertEquals(viewModel.viewState.value, ProjectViewState.ShowError(message = "Timeout"))
+        assertEquals(
+            ProjectViewState.ShowError(message = errorMessage), viewModel.viewState.value
+        )
     }
 }
